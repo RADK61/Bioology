@@ -1,0 +1,830 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контрольная работа ОП.05</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f0f4f9;
+            padding: 20px;
+            color: #1e2a3a;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+            padding: 35px 40px;
+        }
+        /* Экраны */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Стартовый экран */
+        h1 {
+            font-size: 24px;
+            color: #0b2b4a;
+            border-bottom: 3px solid #2b6c9e;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .warning-box {
+            background: #fff2f2;
+            border-left: 6px solid #d9534f;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+        .warning-box strong { color: #a94442; }
+        .info-box {
+            background: #eef4fb;
+            border-left: 6px solid #2b6c9e;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+        .input-group {
+            margin: 18px 0;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a4b6d;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 15px;
+            border: 2px solid #d0d8e5;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #2b6c9e;
+        }
+        .btn {
+            display: inline-block;
+            background: #2b6c9e;
+            color: #fff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .btn:hover { background: #1a4b6d; }
+        .btn-secondary {
+            background: #5e6f88;
+        }
+        .btn-secondary:hover { background: #3f4d63; }
+
+        /* Панель контроля переключений */
+        .switch-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: 2px solid #f5b342;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #7a5500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 999;
+            display: none;
+        }
+        .switch-panel.active { display: block; }
+        .switch-panel.danger {
+            background: #fff2f2;
+            border-color: #d9534f;
+            color: #a94442;
+        }
+
+        /* Таймер */
+        .timer-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #0b2b4a;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Consolas', monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 999;
+            display: none;
+        }
+        .timer-panel.active { display: block; }
+        .timer-panel.danger { background: #d9534f; }
+
+        /* Вопросы */
+        .question {
+            background: #f8faff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
+        }
+        .question-num {
+            display: inline-block;
+            background: #2b6c9e;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a2a3a;
+        }
+        .options label {
+            display: block;
+            padding: 9px 14px;
+            margin: 6px 0;
+            border: 1px solid #d0d8e5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 14px;
+        }
+        .options label:hover {
+            background: #eef4fb;
+            border-color: #2b6c9e;
+        }
+        .options input[type="radio"],
+        .options input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.15);
+            vertical-align: middle;
+        }
+        .options label.correct {
+            background: #e8f5e8;
+            border-color: #4CAF50;
+        }
+        .options label.incorrect {
+            background: #ffebeb;
+            border-color: #d9534f;
+        }
+
+        /* Экран результата */
+        .result-card {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .result-score {
+            font-size: 56px;
+            font-weight: 800;
+            color: #0b2b4a;
+            margin: 15px 0;
+        }
+        .result-grade {
+            display: inline-block;
+            font-size: 28px;
+            font-weight: 800;
+            padding: 10px 40px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        .grade-5 { background: #e8f5e8; color: #2e7d32; }
+        .grade-4 { background: #eef4fb; color: #1a4b6d; }
+        .grade-3 { background: #fff8e1; color: #7a5500; }
+        .grade-2 { background: #ffebeb; color: #a94442; }
+        .result-detail {
+            background: #f8faff;
+            border-radius: 10px;
+            padding: 20px 25px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 15px;
+        }
+        .result-detail p {
+            margin: 8px 0;
+        }
+        .result-detail strong { color: #0b2b4a; }
+
+        .warning-final {
+            background: #fff2f2;
+            border-left: 6px solid #d9534f;
+            border-radius: 10px;
+            padding: 15px 22px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #a94442;
+            text-align: left;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #8899b0;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ПАНЕЛЬ ТАЙМЕРА -->
+<div class="timer-panel" id="timerPanel">⏱ <span id="timerDisplay">45:00</span></div>
+
+<!-- ПАНЕЛЬ ПЕРЕКЛЮЧЕНИЙ -->
+<div class="switch-panel" id="switchPanel">
+    👁 Переключений: <span id="switchCount">0</span>
+</div>
+
+<div class="container">
+
+    <!-- ============================================================ -->
+    <!-- СТАРТОВЫЙ ЭКРАН                                              -->
+    <!-- ============================================================ -->
+    <div class="screen active" id="startScreen">
+        <h1>📝 Контрольная работа по дисциплине ОП.05</h1>
+        <p style="text-align: center; color: #5e6f88; margin-bottom: 20px;">
+            Основы применения искусственного интеллекта и нейронных сетей<br>
+            в профессиональной деятельности
+        </p>
+
+        <div class="info-box">
+            <strong>📋 Структура теста:</strong><br>
+            • Часть А — 10 вопросов с выбором ответа (по 1 баллу).<br>
+            • Часть Б — 5 вопросов «Верно / Неверно» (по 1 баллу).<br>
+            • Часть В — 3 вопроса с выбором нескольких ответов (по 2 балла).<br>
+            • Часть Г — практическое задание (5 баллов).<br>
+            <strong>Максимум: 26 баллов.</strong><br>
+            <strong>Время: 45 минут.</strong>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ ВНИМАНИЕ! Ведётся контроль переключения окон.</strong><br><br>
+            Тест фиксирует каждое переключение на другое окно или вкладку.
+            <br><br>
+            <strong>Штраф: −1 балл за каждое переключение (максимум −5 баллов).</strong><br>
+            Копирование текста вопросов разрешено. Но постарайтесь выполнять работу честно.
+        </div>
+
+        <div class="input-group">
+            <label for="studentName">Ваши ФИО (обязательно):</label>
+            <input type="text" id="studentName" placeholder="Иванов Иван Иванович" required>
+        </div>
+
+        <div class="input-group">
+            <label for="studentGroup">Группа:</label>
+            <input type="text" id="studentGroup" placeholder="1132" required>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="startTest()">Начать тест</button>
+        </div>
+
+        <div class="footer">
+            ГБПОУ РО «РАДК» · 2026 г.
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ЭКРАН ТЕСТА                                                  -->
+    <!-- ============================================================ -->
+    <div class="screen" id="testScreen">
+        <h1>📝 Контрольная работа ОП.05</h1>
+        <p style="text-align: center; color: #5e6f88; margin-bottom: 25px;">
+            <span id="studentInfo"></span>
+        </p>
+
+        <form id="testForm">
+
+            <!-- ЧАСТЬ А -->
+            <h2 style="font-size: 19px; color: #1a4b6d; margin: 25px 0 10px; border-left: 5px solid #2b6c9e; padding-left: 12px;">
+                Часть А. Выберите один правильный ответ
+            </h2>
+
+            <div class="question" data-q="1">
+                <span class="question-num">Вопрос 1</span>
+                <div class="question-text">Что такое промпт?</div>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="a"> а) Программа для обработки текста</label>
+                    <label><input type="radio" name="q1" value="b"> б) Запрос или инструкция для ИИ</label>
+                    <label><input type="radio" name="q1" value="c"> в) Название нейросети</label>
+                    <label><input type="radio" name="q1" value="d"> г) Формат файла</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="2">
+                <span class="question-num">Вопрос 2</span>
+                <div class="question-text">Какая платформа ИИ является российской?</div>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="a"> а) ChatGPT</label>
+                    <label><input type="radio" name="q2" value="b"> б) Gemini</label>
+                    <label><input type="radio" name="q2" value="c"> в) YandexGPT</label>
+                    <label><input type="radio" name="q2" value="d"> г) Claude</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="3">
+                <span class="question-num">Вопрос 3</span>
+                <div class="question-text">Что такое «галлюцинация» ИИ?</div>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="a"> а) Ошибка в коде программы</label>
+                    <label><input type="radio" name="q3" value="b"> б) Сбой сервера</label>
+                    <label><input type="radio" name="q3" value="c"> в) Выдуманные ИИ факты, которых не существует</label>
+                    <label><input type="radio" name="q3" value="d"> г) Задержка ответа</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="4">
+                <span class="question-num">Вопрос 4</span>
+                <div class="question-text">Что обязательно должно быть в идеальном промпте?</div>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="a"> а) Только вопрос</label>
+                    <label><input type="radio" name="q4" value="b"> б) Роль, контекст, ограничения, формат</label>
+                    <label><input type="radio" name="q4" value="c"> в) Смайлики</label>
+                    <label><input type="radio" name="q4" value="d"> г) Ссылка на сайт</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="5">
+                <span class="question-num">Вопрос 5</span>
+                <div class="question-text">Какой нормативный документ регулирует защиту персональных данных в РФ?</div>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="a"> а) ГОСТ 25100-2020</label>
+                    <label><input type="radio" name="q5" value="b"> б) ФЗ-152</label>
+                    <label><input type="radio" name="q5" value="c"> в) СП 47.13330.2016</label>
+                    <label><input type="radio" name="q5" value="d"> г) ФЗ-89</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="6">
+                <span class="question-num">Вопрос 6</span>
+                <div class="question-text">Что такое суммаризация текста?</div>
+                <div class="options">
+                    <label><input type="radio" name="q6" value="a"> а) Удаление файла</label>
+                    <label><input type="radio" name="q6" value="b"> б) Сокращение текста с сохранением главного смысла</label>
+                    <label><input type="radio" name="q6" value="c"> в) Перевод на другой язык</label>
+                    <label><input type="radio" name="q6" value="d"> г) Форматирование</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="7">
+                <span class="question-num">Вопрос 7</span>
+                <div class="question-text">Как проверить реальность ГОСТа, который выдал ИИ?</div>
+                <div class="options">
+                    <label><input type="radio" name="q7" value="a"> а) Спросить у ИИ ещё раз</label>
+                    <label><input type="radio" name="q7" value="b"> б) Проверить в КонсультантПлюс или ГОСТ.ру</label>
+                    <label><input type="radio" name="q7" value="c"> в) Поверить на слово</label>
+                    <label><input type="radio" name="q7" value="d"> г) Скопировать в отчёт</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="8">
+                <span class="question-num">Вопрос 8</span>
+                <div class="question-text">Что означает ошибка «физически невозможное значение»?</div>
+                <div class="options">
+                    <label><input type="radio" name="q8" value="a"> а) ИИ не смог ответить</label>
+                    <label><input type="radio" name="q8" value="b"> б) Значение противоречит законам физики (например, влажность 180%)</label>
+                    <label><input type="radio" name="q8" value="c"> в) Ошибка в программе</label>
+                    <label><input type="radio" name="q8" value="d"> г) Неверный формат</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="9">
+                <span class="question-num">Вопрос 9</span>
+                <div class="question-text">Что такое нормоконтроль?</div>
+                <div class="options">
+                    <label><input type="radio" name="q9" value="a"> а) Проверка текста на орфографию</label>
+                    <label><input type="radio" name="q9" value="b"> б) Проверка соответствия документов нормативам</label>
+                    <label><input type="radio" name="q9" value="c"> в) Подсчёт слов</label>
+                    <label><input type="radio" name="q9" value="d"> г) Форматирование таблиц</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="10">
+                <span class="question-num">Вопрос 10</span>
+                <div class="question-text">Какой из документов относится к инженерным изысканиям?</div>
+                <div class="options">
+                    <label><input type="radio" name="q10" value="a"> а) СП 47.13330.2016</label>
+                    <label><input type="radio" name="q10" value="b"> б) ГОСТ 31937-2011</label>
+                    <label><input type="radio" name="q10" value="c"> в) ФЗ-89</label>
+                    <label><input type="radio" name="q10" value="d"> г) КоАП РФ</label>
+                </div>
+            </div>
+
+            <!-- ЧАСТЬ Б -->
+            <h2 style="font-size: 19px; color: #1a4b6d; margin: 25px 0 10px; border-left: 5px solid #2b6c9e; padding-left: 12px;">
+                Часть Б. Верно / Неверно
+            </h2>
+
+            <div class="question" data-q="11">
+                <span class="question-num">Вопрос 11</span>
+                <div class="question-text">ИИ несёт юридическую ответственность за ошибки в документах.</div>
+                <div class="options">
+                    <label><input type="radio" name="q11" value="true"> Верно</label>
+                    <label><input type="radio" name="q11" value="false"> Неверно</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="12">
+                <span class="question-num">Вопрос 12</span>
+                <div class="question-text">Влажность грунта может быть 180% для суглинка.</div>
+                <div class="options">
+                    <label><input type="radio" name="q12" value="true"> Верно</label>
+                    <label><input type="radio" name="q12" value="false"> Неверно</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="13">
+                <span class="question-num">Вопрос 13</span>
+                <div class="question-text">Уточняющий промпт помогает исправить ошибку ИИ.</div>
+                <div class="options">
+                    <label><input type="radio" name="q13" value="true"> Верно</label>
+                    <label><input type="radio" name="q13" value="false"> Неверно</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="14">
+                <span class="question-num">Вопрос 14</span>
+                <div class="question-text">Ответ ИИ можно сдавать без проверки.</div>
+                <div class="options">
+                    <label><input type="radio" name="q14" value="true"> Верно</label>
+                    <label><input type="radio" name="q14" value="false"> Неверно</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="15">
+                <span class="question-num">Вопрос 15</span>
+                <div class="question-text">Ссылка на URL при нормоконтроле обязательна.</div>
+                <div class="options">
+                    <label><input type="radio" name="q15" value="true"> Верно</label>
+                    <label><input type="radio" name="q15" value="false"> Неверно</label>
+                </div>
+            </div>
+
+            <!-- ЧАСТЬ В -->
+            <h2 style="font-size: 19px; color: #1a4b6d; margin: 25px 0 10px; border-left: 5px solid #2b6c9e; padding-left: 12px;">
+                Часть В. Выберите несколько правильных ответов
+            </h2>
+
+            <div class="question" data-q="16">
+                <span class="question-num">Вопрос 16</span>
+                <div class="question-text">Выберите 3 обязательных признака идеального промпта:</div>
+                <div class="options">
+                    <label><input type="checkbox" name="q16" value="role"> Роль</label>
+                    <label><input type="checkbox" name="q16" value="color"> Цвет текста</label>
+                    <label><input type="checkbox" name="q16" value="context"> Контекст</label>
+                    <label><input type="checkbox" name="q16" value="limits"> Ограничения</label>
+                    <label><input type="checkbox" name="q16" value="emoji"> Смайлики</label>
+                    <label><input type="checkbox" name="q16" value="format"> Формат</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="17">
+                <span class="question-num">Вопрос 17</span>
+                <div class="question-text">Выберите 2 способа проверки числовых данных, которые выдал ИИ:</div>
+                <div class="options">
+                    <label><input type="checkbox" name="q17" value="friend"> Спросить у одногруппника</label>
+                    <label><input type="checkbox" name="q17" value="consult"> Проверить в КонсультантПлюс</label>
+                    <label><input type="checkbox" name="q17" value="believe"> Поверить на слово</label>
+                    <label><input type="checkbox" name="q17" value="source"> Сверить с первоисточником</label>
+                </div>
+            </div>
+
+            <div class="question" data-q="18">
+                <span class="question-num">Вопрос 18</span>
+                <div class="question-text">Что делать, если ИИ выдумал несуществующий ГОСТ?</div>
+                <div class="options">
+                    <label><input type="radio" name="q18" value="a"> а) Оставить как есть</label>
+                    <label><input type="radio" name="q18" value="b"> б) Спросить ИИ ещё раз</label>
+                    <label><input type="radio" name="q18" value="c"> в) Проверить в базе и заменить на реальный</label>
+                    <label><input type="radio" name="q18" value="d"> г) Удалить весь отчёт</label>
+                </div>
+            </div>
+
+            <!-- ЧАСТЬ Г -->
+            <h2 style="font-size: 19px; color: #1a4b6d; margin: 25px 0 10px; border-left: 5px solid #2b6c9e; padding-left: 12px;">
+                Часть Г. Практическое задание
+            </h2>
+
+            <div class="question" data-q="19">
+                <span class="question-num">Вопрос 19 (5 баллов)</span>
+                <div class="question-text">
+                    Прочитайте текст, сгенерированный ИИ. Отметьте ВСЕ ошибочные утверждения:
+                </div>
+                <div style="background: #fdf9e8; padding: 15px 20px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #d4a017; font-style: italic; font-size: 14px;">
+                    «Инженерно-геодезические изыскания выполнены в январе 2026 года в Аксайском районе Ростовской области. Температура воздуха в период работ +35°C, ясно. Рельеф горный, перепады высот до 1500 м. Растительность представлена пальмами и тундровым мхом. Глубина заложения фундамента принята с учётом вечной мерзлоты.»
+                </div>
+                <div class="options">
+                    <label><input type="checkbox" name="q19" value="e1"> Температура +35°C в январе</label>
+                    <label><input type="checkbox" name="q19" value="e2"> Горный рельеф, перепады до 1500 м</label>
+                    <label><input type="checkbox" name="q19" value="e3"> Указан год съёмки</label>
+                    <label><input type="checkbox" name="q19" value="e4"> Пальмы и тундровый мох</label>
+                    <label><input type="checkbox" name="q19" value="e5"> Вечная мерзлота</label>
+                    <label><input type="checkbox" name="q19" value="e6"> Название района (Аксайский)</label>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" class="btn" onclick="submitTest()">Завершить тест и узнать результат</button>
+            </div>
+
+        </form>
+
+        <div class="footer">
+            ГБПОУ РО «РАДК» · 2026 г.
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ЭКРАН РЕЗУЛЬТАТА                                             -->
+    <!-- ============================================================ -->
+    <div class="screen" id="resultScreen">
+        <h1>📊 Результат контрольной работы</h1>
+
+        <div class="result-card">
+            <div id="studentResultInfo" style="font-size: 16px; color: #5e6f88;"></div>
+
+            <div class="result-score" id="totalScore">0 / 26</div>
+            <div class="result-grade" id="gradeBox">—</div>
+
+            <div class="result-detail">
+                <p><strong>📌 Правильных ответов:</strong> <span id="correctCount">0</span> из 19</p>
+                <p><strong>💰 Баллов за ответы:</strong> <span id="rawScore">0</span> из 26</p>
+                <p><strong>👁 Переключений окон:</strong> <span id="finalSwitchCount">0</span></p>
+                <p><strong>⚠️ Штраф:</strong> −<span id="penalty">0</span> баллов</p>
+                <hr style="margin: 12px 0; border: 0; border-top: 1px dashed #d0d8e5;">
+                <p style="font-size: 17px;"><strong>🏆 Итоговый балл: <span id="finalScore">0</span> из 26</strong></p>
+            </div>
+
+            <div class="warning-final" id="switchWarning" style="display: none;">
+                ⚠️ За время теста зафиксировано <span id="switchWarnCount">0</span> переключений окон.
+                Итоговый балл снижен. Рекомендуем выполнять работу без отвлечений.
+            </div>
+
+            <div id="detailsBlock" style="text-align: left; margin-top: 20px;"></div>
+        </div>
+
+        <div class="footer">
+            ГБПОУ РО «РАДК» · 2026 г.
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ============================================================
+// КОНФИГУРАЦИЯ
+// ============================================================
+const TEST_DURATION_MINUTES = 45;
+const SWITCH_PENALTY = 1;
+const MAX_PENALTY = 5;
+
+// ============================================================
+// ПРАВИЛЬНЫЕ ОТВЕТЫ
+// ============================================================
+const correctAnswers = {
+    q1: 'b', q2: 'c', q3: 'c', q4: 'b', q5: 'b',
+    q6: 'b', q7: 'b', q8: 'b', q9: 'b', q10: 'a',
+    q11: 'false', q12: 'false', q13: 'true', q14: 'false', q15: 'true',
+    q16: ['role', 'context', 'limits'],   // 3 правильных
+    q17: ['consult', 'source'],           // 2 правильных
+    q18: 'c',
+    q19: ['e1', 'e2', 'e4', 'e5']         // 4 правильных
+};
+
+// Баллы за каждый вопрос
+const questionPoints = {
+    q1:1, q2:1, q3:1, q4:1, q5:1, q6:1, q7:1, q8:1, q9:1, q10:1,
+    q11:1, q12:1, q13:1, q14:1, q15:1,
+    q16:2, q17:2, q18:2,
+    q19:5
+};
+
+// ============================================================
+// ПЕРЕМЕННЫЕ СОСТОЯНИЯ
+// ============================================================
+let switchCount = 0;
+let timerInterval = null;
+let timeLeft = TEST_DURATION_MINUTES * 60;
+let testStarted = false;
+let testFinished = false;
+let studentName = '';
+let studentGroup = '';
+
+// ============================================================
+// СТАРТ ТЕСТА
+// ============================================================
+function startTest() {
+    studentName = document.getElementById('studentName').value.trim();
+    studentGroup = document.getElementById('studentGroup').value.trim();
+
+    if (!studentName || !studentGroup) {
+        alert('⚠️ Пожалуйста, заполните ФИО и группу перед началом теста.');
+        return;
+    }
+
+    document.getElementById('studentInfo').textContent = studentName + ' · Группа ' + studentGroup;
+
+    document.getElementById('startScreen').classList.remove('active');
+    document.getElementById('testScreen').classList.add('active');
+    document.getElementById('timerPanel').classList.add('active');
+    document.getElementById('switchPanel').classList.add('active');
+
+    testStarted = true;
+    startTimer();
+    startSwitchTracking();
+    window.scrollTo(0, 0);
+}
+
+// ============================================================
+// ТАЙМЕР
+// ============================================================
+function startTimer() {
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert('⏰ Время вышло! Тест будет завершён автоматически.');
+            submitTest();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const min = Math.floor(timeLeft / 60);
+    const sec = timeLeft % 60;
+    const display = document.getElementById('timerDisplay');
+    display.textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+
+    const panel = document.getElementById('timerPanel');
+    if (timeLeft <= 300) {
+        panel.classList.add('danger');
+    }
+}// ============================================================
+// ОТСЛЕЖИВАНИЕ ПЕРЕКЛЮЧЕНИЙ ОКОН
+// ============================================================
+let lastSwitchTime = 0;
+const SWITCH_DEBOUNCE_MS = 1000; // игнорируем повторные события в течение 1 сек
+
+function startSwitchTracking() {
+    document.addEventListener('visibilitychange', handleSwitch);
+    window.addEventListener('blur', handleSwitch);
+}
+
+function handleSwitch() {
+    if (!testStarted || testFinished) return;
+
+    const now = Date.now();
+    if (now - lastSwitchTime < SWITCH_DEBOUNCE_MS) return; // защита от двойного срабатывания
+    lastSwitchTime = now;
+
+    if (document.hidden || !document.hasFocus()) {
+        switchCount++;
+        updateSwitchDisplay();
+    }
+}
+
+// ============================================================
+// ПРОВЕРКА ОТВЕТОВ
+// ============================================================
+function submitTest() {
+    if (testFinished) return;
+    testFinished = true;
+
+    clearInterval(timerInterval);
+    document.removeEventListener('visibilitychange', handleSwitch);
+    window.removeEventListener('blur', handleSwitch);
+
+    let rawScore = 0;
+    let correctCount = 0;
+
+    const details = [];
+    const form = document.getElementById('testForm');
+
+    // Проверка одиночных ответов
+    for (let i = 1; i <= 15; i++) {
+        const key = 'q' + i;
+        const selected = form.querySelector(`input[name="${key}"]:checked`);
+        const answer = selected ? selected.value : null;
+        const correct = correctAnswers[key];
+        const isCorrect = answer === correct;
+        if (isCorrect) {
+            rawScore += questionPoints[key];
+            correctCount++;
+        }
+        details.push({ q: i, isCorrect, userAnswer: answer, correctAnswer: correct });
+    }
+
+    // q16 — чекбоксы (роль, контекст, ограничения)
+    const q16Selected = Array.from(form.querySelectorAll('input[name="q16"]:checked')).map(c => c.value);
+    const q16Correct = correctAnswers.q16;
+    const q16Score = calculateMultiScore(q16Selected, q16Correct);
+    if (q16Score > 0) { rawScore += q16Score; correctCount++; }
+    details.push({ q: 16, isCorrect: q16Score === questionPoints.q16, partial: q16Score, max: questionPoints.q16 });
+
+    // q17 — чекбоксы (Консультант+, первоисточник)
+    const q17Selected = Array.from(form.querySelectorAll('input[name="q17"]:checked')).map(c => c.value);
+    const q17Correct = correctAnswers.q17;
+    const q17Score = calculateMultiScore(q17Selected, q17Correct);
+    if (q17Score > 0) { rawScore += q17Score; correctCount++; }
+    details.push({ q: 17, isCorrect: q17Score === questionPoints.q17, partial: q17Score, max: questionPoints.q17 });
+
+    // q18 — одиночный
+    const q18Selected = form.querySelector('input[name="q18"]:checked');
+    const q18Answer = q18Selected ? q18Selected.value : null;
+    const q18IsCorrect = q18Answer === correctAnswers.q18;
+    if (q18IsCorrect) { rawScore += questionPoints.q18; correctCount++; }
+    details.push({ q: 18, isCorrect: q18IsCorrect });
+
+    // q19 — чекбоксы (4 правильных)
+    const q19Selected = Array.from(form.querySelectorAll('input[name="q19"]:checked')).map(c => c.value);
+    const q19Correct = correctAnswers.q19;
+    const q19Score = calculateMultiScore(q19Selected, q19Correct, 5);
+    rawScore += q19Score;
+    if (q19Score === 5) correctCount++;
+    details.push({ q: 19, isCorrect: q19Score === 5, partial: q19Score, max: 5 });
+
+    // Штраф за переключения
+    const penalty = Math.min(switchCount * SWITCH_PENALTY, MAX_PENALTY);
+    const finalScore = Math.max(0, rawScore - penalty);
+
+    // Оценка
+    let grade, gradeClass;
+    if (finalScore >= 25) { grade = '5 (отлично)'; gradeClass = 'grade-5'; }
+    else if (finalScore >= 20) { grade = '4 (хорошо)'; gradeClass = 'grade-4'; }
+    else if (finalScore >= 14) { grade = '3 (удовлетворительно)'; gradeClass = 'grade-3'; }
+    else { grade = '2 (неудовлетворительно)'; gradeClass = 'grade-2'; }
+
+    showResult(finalScore, rawScore, penalty, grade, gradeClass, correctCount, details);
+}
+
+// Подсчёт баллов для вопросов с несколькими ответами
+function calculateMultiScore(selected, correct, maxScore = 2) {
+    if (selected.length === 0) return 0;
+    const correctSet = new Set(correct);
+    const selectedSet = new Set(selected);
+
+    // Проверяем, что нет лишних
+    let hasExtra = false;
+    selectedSet.forEach(v => { if (!correctSet.has(v)) hasExtra = true; });
+    if (hasExtra) return 0;
+
+    // Начисляем пропорционально угаданным
+    let hits = 0;
+    selectedSet.forEach(v => { if (correctSet.has(v)) hits++; });
+
+    const ratio = hits / correct.length;
+    return Math.round(ratio * maxScore);
+}
+
+// ============================================================
+// ПОКАЗ РЕЗУЛЬТАТА
+// ============================================================
+function showResult(finalScore, rawScore, penalty, grade, gradeClass, correctCount, details) {
+    document.getElementById('testScreen').classList.remove('active');
+    document.getElementById('resultScreen').classList.add('active');
+    document.getElementById('timerPanel').classList.remove('active');
+    document.getElementById('switchPanel').classList.remove('active');
+
+    document.getElementById('studentResultInfo').textContent = studentName + ' · Группа ' + studentGroup;
+    document.getElementById('totalScore').textContent = finalScore + ' / 26';
+    document.getElementById('rawScore').textContent = rawScore;
+    document.getElementById('correctCount').textContent = correctCount;
+    document.getElementById('finalSwitchCount').textContent = switchCount;
+    document.getElementById('penalty').textContent = penalty;
+    document.getElementById('finalScore').textContent = finalScore;
+
+    const gradeBox = document.getElementById('gradeBox');
+    gradeBox.textContent = grade;
+    gradeBox.className = 'result-grade ' + gradeClass;
+
+    if (switchCount > 0) {
+        document.getElementById('switchWarning').style.display = 'block';
+        document.getElementById('switchWarnCount').textContent = switchCount;
+    }
+
+    window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
